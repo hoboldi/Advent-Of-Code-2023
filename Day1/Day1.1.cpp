@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <fstream>
 
 int getDigits(std::string line) {
     std::string number = "";
@@ -20,22 +21,28 @@ int getDigits(std::string line) {
 
 
 int main() {
-
     u_int64_t sum = 0;
     bool toRead = true;
     int lastNumber = 0;
     int i = 0;
+
+    std::string inputName = "../../Day1/Day1.txt";
+    std::ifstream inputFile (inputName);
+    if (!inputFile)
+        throw std::runtime_error("Could not open file " + std::string(inputName));
+
     while(toRead) {
         sum += (u_int64_t) lastNumber;
 
         std::string line;
-        std::cin >> line;
-
-        if(line == "END") {
-            break;
-        }
+        inputFile >> line;
 
         lastNumber = getDigits(line);
+
+        if(inputFile.eof())
+            break;
     }
+    sum += (u_int64_t) lastNumber;
+
     std::cout << sum;
 }

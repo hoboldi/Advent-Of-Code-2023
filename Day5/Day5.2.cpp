@@ -1,12 +1,11 @@
 #include <vector>
 #include <iostream>
 #include <string>
-#include <algorithm>
 #include <sstream>
 #include <map>
-#include <compare>
 #include <utility>
 #include <limits>
+#include <fstream>
 
 std::vector<uint> intParser(const std::string& line) {
 
@@ -83,16 +82,20 @@ public:
 };
 
 int main() {
+    std::string inputName = "../../Day5/Day5.txt";
+    std::ifstream inputFile (inputName);
+    if (!inputFile)
+        throw std::runtime_error("Could not open file " + std::string(inputName));
+
     std::vector <std::string> input(0);
 
     while (true) {
         std::string line;
-        getline(std::cin, line);
-
-        if (line == "END")
-            break;
-
+        getline(inputFile, line);
         input.push_back(line);
+
+        if(inputFile.eof())
+            break;
     }
 
     auto firstLine =  intParser(input[0].substr(7));

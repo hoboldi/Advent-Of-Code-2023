@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <fstream>
 
 
 char checkWordDigit(std::string line) {
@@ -97,6 +98,10 @@ int getDigits(std::string line) {
 
 
 int main() {
+    std::string inputName = "../../Day1/Day1.txt";
+    std::ifstream inputFile (inputName);
+    if (!inputFile)
+        throw std::runtime_error("Could not open file " + std::string(inputName));
 
     u_int64_t sum = 0;
     bool toRead = true;
@@ -106,13 +111,14 @@ int main() {
         sum += (u_int64_t) lastNumber;
 
         std::string line;
-        std::cin >> line;
-
-        if(line == "END") {
-            break;
-        }
+        inputFile >> line;
 
         lastNumber = getDigits(line);
+
+        if(inputFile.eof())
+            break;
     }
+    sum += (u_int64_t) lastNumber;
+
     std::cout << sum;
 }

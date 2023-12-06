@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <variant>
+#include <fstream>
 
 struct digit {
     char digit;
@@ -13,16 +14,20 @@ struct symbol {};
 
 
 int main() {
+    std::string inputName = "../../Day3/Day3.txt";
+    std::ifstream inputFile (inputName);
+    if (!inputFile)
+        throw std::runtime_error("Could not open file " + std::string(inputName));
+
     std::vector<std::string> input(0);
 
     while(true) {
         std::string line;
-        getline(std::cin,line);
-
-        if(line == "END")
-            break;
-
+        getline(inputFile,line);
         input.push_back(line);
+
+        if(inputFile.eof())
+            break;
     }
 
     std::vector<std::vector<std::variant<digit,point,symbol>>> table(input.size());

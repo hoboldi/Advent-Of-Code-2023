@@ -2,6 +2,7 @@
 #include <vector>
 #include <iostream>
 #include <sstream>
+#include <fstream>
 
 const uint red = 12, green = 13, blue = 14;
 
@@ -58,16 +59,23 @@ bool lineSolver(std::string line) {
 
 
 int main() {
+    std::string inputName = "../../Day2/Day2.txt";
+    std::ifstream inputFile (inputName);
+    if (!inputFile)
+        throw std::runtime_error("Could not open file " + std::string(inputName));
+
     uint sum = 0;
     uint i = 0;
 
     while(true) {
         std::string line;
-        std::getline(std::cin, line);
-        if(line == "END")
-            break;
+        std::getline(inputFile, line);
+
         i++;
         sum += lineSolver(line) ? i : 0;
+
+        if(inputFile.eof())
+            break;
     }
 
     std::cout << sum;

@@ -3,6 +3,7 @@
 #include <string>
 #include <algorithm>
 #include <sstream>
+#include <fstream>
 
 std::vector<uint> intParser(const std::string& line) {
 
@@ -43,16 +44,20 @@ uint checkScore(std::vector<uint> winningNumbers, std::vector<uint> myCards) {
 
 
 int main() {
+    std::string inputName = "../../Day4/Day4.txt";
+    std::ifstream inputFile (inputName);
+    if (!inputFile)
+        throw std::runtime_error("Could not open file " + std::string(inputName));
+
     std::vector <std::string> input(0);
 
     while (true) {
         std::string line;
-        getline(std::cin, line);
-
-        if (line == "END")
-            break;
-
+        getline(inputFile, line);
         input.push_back(line);
+
+        if(inputFile.eof())
+            break;
     }
     uint sum = 0;
 
