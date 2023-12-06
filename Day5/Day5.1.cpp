@@ -6,6 +6,7 @@
 #include <utility>
 #include <limits>
 #include <fstream>
+#include <cassert>
 
 std::vector<uint> intParser(const std::string& line) {
 
@@ -130,5 +131,6 @@ int main() {
     for(std::size_t i = 0; i < end.size(); i++)
         min = min > end[i] ? end[i] : min;
 
-    std::cout << min;
+    assert(min == 240320250);
+    std::cout << min << std::endl;
 }

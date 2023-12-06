@@ -4,6 +4,7 @@
 #include <sstream>
 #include <limits>
 #include <fstream>
+#include <cassert>
 
 std::vector<uint> intParser(const std::string& line) {
 
@@ -55,5 +56,6 @@ int main() {
         result *= numberOfPossibleWins;
     }
 
-    std::cout << result;
+    assert(result == 316800);
+    std::cout << result << std::endl;
 }

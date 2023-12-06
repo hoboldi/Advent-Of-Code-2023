@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-
+#include <cassert>
 
 char checkWordDigit(std::string line) {
     switch (line.size()) {
@@ -120,5 +120,6 @@ int main() {
     }
     sum += (u_int64_t) lastNumber;
 
-    std::cout << sum;
+    assert(sum == 54418);
+    std::cout << sum << std::endl;
 }

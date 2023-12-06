@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <sstream>
 #include <fstream>
+#include <cassert>
 
 std::vector<uint> intParser(const std::string& line) {
 
@@ -77,5 +78,7 @@ int main() {
 
         sum += checkScore(winningNumbers,myCards);
     }
-    std::cout << sum;
+
+    assert(sum == 21485);
+    std::cout << sum << std::endl;
 }

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <cassert>
 
 uint lineSolver(std::string line) {
     std::string toSolve = line.substr(line.find(": ") + 2);
@@ -77,5 +78,6 @@ int main() {
             break;
     }
 
-    std::cout << sum;
+    assert(sum == 67335);
+    std::cout << sum << std::endl;
 }

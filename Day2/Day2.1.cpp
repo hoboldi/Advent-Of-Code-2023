@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <cassert>
 
 const uint red = 12, green = 13, blue = 14;
 
@@ -78,5 +79,6 @@ int main() {
             break;
     }
 
-    std::cout << sum;
+    assert(sum == 2512);
+    std::cout << sum << std::endl;
 }

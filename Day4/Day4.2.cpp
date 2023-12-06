@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <sstream>
 #include <fstream>
+#include <cassert>
 
 std::vector<uint> intParser(const std::string& line) {
 
@@ -86,5 +87,6 @@ int main() {
     for(std::size_t i = 0; i < numberOfCards.size(); i++)
         sum += numberOfCards[i];
 
-    std::cout << sum;
+    assert(sum == 11024379);
+    std::cout << sum << std::endl;
 }

@@ -4,6 +4,7 @@
 #include <sstream>
 #include <limits>
 #include <fstream>
+#include <cassert>
 
 ulong intParser(const std::string& line) {
 
@@ -47,5 +48,6 @@ int main() {
         numberOfPossibleWins = traveledDistance > distance ? numberOfPossibleWins + 1 : numberOfPossibleWins;
     }
 
-    std::cout << numberOfPossibleWins;
+    assert(numberOfPossibleWins == 316800);
+    std::cout << numberOfPossibleWins << std::endl;
 }

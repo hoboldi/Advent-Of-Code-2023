@@ -3,6 +3,7 @@
 #include <string>
 #include <variant>
 #include <fstream>
+#include <cassert>
 
 struct digit {
     char digit;
@@ -128,5 +129,6 @@ int main() {
         }
     }
 
-    std::cout << sum;
+    assert(sum == 531932);
+    std::cout << sum << std::endl;
 }
