@@ -95,8 +95,8 @@ int main() {
         input.push_back(line);
     }
 
-    std::vector <uint> start = intParser(input[0].substr(7));
-    std::vector <uint> end = start;
+    std::vector <uint> start;
+    std::vector <uint> end = intParser(input[0].substr(7));;
 
     for(std::size_t i = 2; i < input.size(); i++) {
 

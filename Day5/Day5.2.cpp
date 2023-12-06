@@ -95,8 +95,16 @@ int main() {
         input.push_back(line);
     }
 
-    std::vector <uint> start = intParser(input[0].substr(7));
-    std::vector <uint> end = start;
+    auto firstLine =  intParser(input[0].substr(7));
+    std::vector <pair> start;
+    std::vector <pair> end(firstLine.size()/2);
+    for(std::size_t i = 0; i < firstLine.size(); i++) {
+        if(i % 2 == 0) {
+            end[i/2].first = firstLine[i];
+        } else {
+            end[i/2].second = firstLine[i] + firstLine[i - 1] - 1;
+        }
+    }
 
     for(std::size_t i = 2; i < input.size(); i++) {
 
@@ -114,18 +122,26 @@ int main() {
 
         end.resize(0);
 
-        for(uint x: start) {
-            Node* node = rangeBinaryTree.search(x);
+        for(std::size_t j = 0; j < start.size(); j++) {
+            pair x = start[j];
+            Node* node = rangeBinaryTree.search(x.first);
             if(node == nullptr)
                 end.push_back(x);
-            else
-                end.push_back(node->value + x - node->low);
+            else {
+                if(node->high >= x.second) {
+                    end.push_back(std::make_pair(node->value + x.first - node->low,node->value + x.second - node->low));
+                } else {
+                    end.push_back(std::make_pair(node->value + x.first - node->low, node->value + node->high - node->low));
+                    start.push_back(std::make_pair(node->high + 1,x.second));
+                }
+            }
+
         }
     }
 
     uint min = std::numeric_limits<uint>::max();
     for(std::size_t i = 0; i < end.size(); i++)
-        min = min > end[i] ? end[i] : min;
+        min = min > end[i].first ? end[i].first : min;
 
     std::cout << min;
 }
