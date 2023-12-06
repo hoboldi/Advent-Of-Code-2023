@@ -1,0 +1,1 @@
+add_executable(day5.1 Day5.1.cpp)
