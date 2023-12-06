@@ -2,30 +2,24 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#include <utility>
 #include <limits>
 #include <fstream>
 
-std::vector<uint> intParser(const std::string& line) {
+ulong intParser(const std::string& line) {
 
     std::istringstream iss(line);
-    std::vector<uint> returnVector(0);
+    std::string returnNumber;
 
     std::string split;
     while (std::getline(iss, split, ' '))
     {
         if(split == "")
             continue;
-        returnVector.push_back(stoul(split));
+        returnNumber += split;
     }
 
-    return returnVector;
+    return stoull(returnNumber);
 }
-
-typedef std::pair<uint, uint> pair;
-
-
-
 
 int main() {
     std::string inputName = "../../Day6/Day6.txt";
@@ -44,21 +38,14 @@ int main() {
             break;
     }
 
-    std::vector<uint> times = intParser(input[0].substr(5));
-    std::vector<uint> distances = intParser(input[1].substr(9));
+    ulong time = intParser(input[0].substr(5));
+    ulong distance = intParser(input[1].substr(9));
+    ulong numberOfPossibleWins = 0;
 
-    uint result = 1;
-
-    for(size_t i = 0; i < times.size(); i++) {
-        uint numberOfPossibleWins = 0;
-
-        for(size_t j = 0; j <= times[i]; j++) {
-            uint traveledDistance = (times[i] - j) * j;
-            numberOfPossibleWins = traveledDistance > distances[i] ? numberOfPossibleWins + 1 : numberOfPossibleWins;
-        }
-
-        result *= numberOfPossibleWins;
+    for(size_t i = 0; i <= time; i++) {
+        ulong traveledDistance = (time - i) * i;
+        numberOfPossibleWins = traveledDistance > distance ? numberOfPossibleWins + 1 : numberOfPossibleWins;
     }
 
-    std::cout << result;
+    std::cout << numberOfPossibleWins;
 }

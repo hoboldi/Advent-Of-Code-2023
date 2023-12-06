@@ -2,7 +2,6 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#include <utility>
 #include <limits>
 #include <fstream>
 
@@ -21,10 +20,6 @@ std::vector<uint> intParser(const std::string& line) {
 
     return returnVector;
 }
-
-typedef std::pair<uint, uint> pair;
-
-
 
 
 int main() {

@@ -15,7 +15,7 @@ std::vector<uint> intParser(const std::string& line) {
     {
         if(split == "")
             continue;
-        returnVector.push_back(stoi(split));
+        returnVector.push_back(stoul(split));
     }
 
     return returnVector;
