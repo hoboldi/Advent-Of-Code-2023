@@ -156,7 +156,6 @@ int main() {
 
     for(std::size_t i = 0; i < hands.size(); i++) {
         winnings += (unsigned long long) (i + 1) * (unsigned long long) hands[i].second;
-        std::cout << hands[i].first << std::endl;
     }
 
     assert(winnings == 249638405);
