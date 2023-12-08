@@ -69,7 +69,6 @@ int main() {
 
 
     while(current != last) {
-        std::cout << network[current].name << std::endl;
         allSteps++;
         if(instructions[step] == 'L') {
             current = network[network[current].idNext.first].id;
@@ -79,7 +78,8 @@ int main() {
 
         step = step + 1 >= instructions.size() ? step = 0 : step + 1;
     }
-    std::cout << network[current].name << std::endl;
 
+
+    assert(allSteps == 11911);
     std::cout << allSteps << std::endl;
 }

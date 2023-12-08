@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cassert>
 #include <map>
+#include <numeric>
 
 typedef std::pair<uint,uint> uintPair;
 typedef std::pair<std::string, std::string> stringPair;
@@ -61,25 +62,34 @@ int main() {
         i.idNext = std::make_pair(nameToId.find(i.nameNext.first)->second,nameToId.find(i.nameNext.second)->second);
     }
 
-    uint current = nameToId.find("AAA")->second;
-    uint last = nameToId.find("ZZZ")->second;
-    uint allSteps = 0;
-    uint step = 0;
+    std::vector<uint> currents;
+    for(size_t i = 0; i < network.size(); i++) {
+        if(network[i].name[2] == 'A') {
+            currents.push_back(network[i].id);
+        }
+    }
+
+    std::vector<uint> allSteps(currents.size());
+    std::vector<uint> steps(currents.size());
     std::string instructions = input[0];
 
-
-    while(current != last) {
-        std::cout << network[current].name << std::endl;
-        allSteps++;
-        if(instructions[step] == 'L') {
-            current = network[network[current].idNext.first].id;
-        } else {
-            current = network[network[current].idNext.second].id;
+    for(size_t i = 0; i < currents.size(); i++) {
+        while (network[currents[i]].name[2] != 'Z') {
+            allSteps[i]++;
+            if(instructions[steps[i]] == 'L') {
+                currents[i] = network[network[currents[i]].idNext.first].id;
+            } else {
+                currents[i] = network[network[currents[i]].idNext.second].id;
+            }
+            steps[i] = steps[i] + 1 >= instructions.size() ? steps[i] = 0 : steps[i] + 1;
         }
-
-        step = step + 1 >= instructions.size() ? step = 0 : step + 1;
     }
-    std::cout << network[current].name << std::endl;
 
-    std::cout << allSteps << std::endl;
+    unsigned long long result = 1;
+    for(std::size_t i = 0; i < allSteps.size(); i++) {
+        result = std::lcm(result,(unsigned long long) allSteps[i]);
+    }
+
+    assert(result == 10151663816849);
+    std::cout << result << std::endl;
 }
