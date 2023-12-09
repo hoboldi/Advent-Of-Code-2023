@@ -7,33 +7,49 @@
 #include <algorithm>
 #include <cassert>
 #include <map>
-#include <numeric>
+#include <stack>
 
-typedef std::pair<uint,uint> uintPair;
-typedef std::pair<std::string, std::string> stringPair;
-uint nextId = 0;
-std::map<std::string,uint> nameToId;
-std::map<uint,std::string> idToName;
+std::vector<int> intParser(const std::string& line) {
 
+    std::istringstream iss(line);
+    std::vector<int> returnVector(0);
 
-struct Node {
-    uint id;
-    std::string name;
-    uintPair idNext;
-    stringPair nameNext;
-};
+    std::string split;
+    while (std::getline(iss, split, ' '))
+    {
+        if(split == "")
+            continue;
+        returnVector.push_back(stoi(split));
+    }
 
-Node lineToNode(std::string &line) {
-    Node returnNode;
-    returnNode.id = nextId++;
-    returnNode.name = line.substr(0,3);
-    returnNode.nameNext.first = line.substr(7,3);
-    returnNode.nameNext.second = line.substr(12,3);
-    nameToId.insert(std::make_pair(returnNode.name,returnNode.id));
-    idToName.insert(std::make_pair(returnNode.id,returnNode.name));
-
-    return returnNode;
+    return returnVector;
 }
+
+int extrapolation(std::vector<int> history) {
+    std::vector<int> current = history;
+    std::stack<int> lasts;
+    bool notZeros = true;
+
+    while(notZeros) {
+        lasts.push(current[0]);
+
+        notZeros = false;
+        for(std::size_t i = 0; i < current.size() - 1; i++) {
+            current[i] = current[i + 1] - current[i];
+            if(current[i] != 0)
+                notZeros = true;
+        }
+        current.pop_back();
+    }
+    int newNumber = 0;
+
+    while(!lasts.empty()) {
+        newNumber = lasts.top() - newNumber;
+        lasts.pop();
+    }
+    return newNumber;
+}
+
 
 int main() {
     std::string inputName = "../../Day9/Day9.txt";
@@ -52,44 +68,18 @@ int main() {
             break;
     }
 
-    std::vector<Node> network(0);
+    std::vector<std::vector<int>> history(input.size());
 
-    for(std::size_t i = 2; i < input.size(); i++) {
-        network.push_back(lineToNode(input[i]));
+    for(size_t i = 0; i < input.size(); i++) {
+        history[i] = intParser(input[i]);
     }
 
-    for(auto & i : network) {
-        i.idNext = std::make_pair(nameToId.find(i.nameNext.first)->second,nameToId.find(i.nameNext.second)->second);
+    int sum = 0;
+
+    for(size_t i = 0; i < history.size(); i++) {
+        sum += extrapolation(history[i]);
     }
 
-    std::vector<uint> currents;
-    for(size_t i = 0; i < network.size(); i++) {
-        if(network[i].name[2] == 'A') {
-            currents.push_back(network[i].id);
-        }
-    }
-
-    std::vector<uint> allSteps(currents.size());
-    std::vector<uint> steps(currents.size());
-    std::string instructions = input[0];
-
-    for(size_t i = 0; i < currents.size(); i++) {
-        while (network[currents[i]].name[2] != 'Z') {
-            allSteps[i]++;
-            if(instructions[steps[i]] == 'L') {
-                currents[i] = network[network[currents[i]].idNext.first].id;
-            } else {
-                currents[i] = network[network[currents[i]].idNext.second].id;
-            }
-            steps[i] = steps[i] + 1 >= instructions.size() ? steps[i] = 0 : steps[i] + 1;
-        }
-    }
-
-    unsigned long long result = 1;
-    for(std::size_t i = 0; i < allSteps.size(); i++) {
-        result = std::lcm(result,(unsigned long long) allSteps[i]);
-    }
-
-    assert(result == 10151663816849);
-    std::cout << result << std::endl;
+    assert(sum == 1154);
+    std::cout << sum << std::endl;
 }

@@ -80,6 +80,6 @@ int main() {
         sum += extrapolation(history[i]);
     }
 
-
+    assert(sum == 1930746032);
     std::cout << sum << std::endl;
 }
