@@ -28,6 +28,7 @@ enum Direction {
     West
 };
 
+
 TileType getTileType(char x) {
     switch (x) {
         case '|':
@@ -59,6 +60,7 @@ struct Tile {
 };
 
 std::vector<std::vector<Tile>> map;
+
 
 bool Connectable (Tile last, Tile current) {
     switch (last.type) {
@@ -129,89 +131,116 @@ bool Connectable (Tile last, Tile current) {
     }
 }
 
-uint search(Tile current, Direction direction) {
+std::vector<Coordinate> search(Tile current, Direction direction) {
+    std::vector<Coordinate> returnValue(0);
     switch (current.type) {
         case Northsouth:
             if(direction == North && current.coordinate.x > 0 &&
                Connectable(current, map.at(current.coordinate.x - 1).at(current.coordinate.y))) {
-                return search(map.at(current.coordinate.x - 1).at(current.coordinate.y),North) + 1;
+                returnValue = search(map.at(current.coordinate.x - 1).at(current.coordinate.y),North);
+                returnValue.push_back(current.coordinate);
+                return returnValue;
             }
 
             if(direction == South && current.coordinate.x < map.size() - 1 &&
                Connectable(current, map.at(current.coordinate.x + 1).at(current.coordinate.y))) {
-                return search(map.at(current.coordinate.x + 1).at(current.coordinate.y),South) + 1;
+                returnValue = search(map.at(current.coordinate.x + 1).at(current.coordinate.y),South);
+                returnValue.push_back(current.coordinate);
+                return returnValue;
             }
 
-            return std::numeric_limits<uint>::min();
+
+            return returnValue;
 
         case Northeast:
             if(direction == South && current.coordinate.y < map.at(0).size() - 1 &&
                Connectable(current, map.at(current.coordinate.x).at(current.coordinate.y + 1))) {
-                return search(map.at(current.coordinate.x).at(current.coordinate.y + 1),East) + 1;
+                returnValue = search(map.at(current.coordinate.x).at(current.coordinate.y + 1),East);
+                returnValue.push_back(current.coordinate);
+                return returnValue;
             }
 
             if(direction == West && current.coordinate.x > 0 &&
                Connectable(current, map.at(current.coordinate.x - 1).at(current.coordinate.y))) {
-                return search(map.at(current.coordinate.x - 1).at(current.coordinate.y),North) + 1;
+                returnValue =  search(map.at(current.coordinate.x - 1).at(current.coordinate.y),North);
+                returnValue.push_back(current.coordinate);
+                return returnValue;
             }
 
-            return std::numeric_limits<uint>::min();
+            return returnValue;
 
         case Northwest:
             if(direction == South && current.coordinate.y > 0 &&
                Connectable(current, map.at(current.coordinate.x).at(current.coordinate.y - 1))) {
-                return search(map.at(current.coordinate.x).at(current.coordinate.y - 1),West) + 1;
+                returnValue = search(map.at(current.coordinate.x).at(current.coordinate.y - 1),West);
+                returnValue.push_back(current.coordinate);
+                return returnValue;
             }
 
             if(direction == East && current.coordinate.x > 0 &&
                Connectable(current, map.at(current.coordinate.x - 1).at(current.coordinate.y))) {
-                return search(map.at(current.coordinate.x - 1).at(current.coordinate.y),North) + 1;
+                returnValue = search(map.at(current.coordinate.x - 1).at(current.coordinate.y),North);
+                returnValue.push_back(current.coordinate);
+                return returnValue;
             }
 
-            return std::numeric_limits<uint>::min();
+            return returnValue;
 
         case Southwest:
             if(direction == North && current.coordinate.y > 0 &&
                Connectable(current, map.at(current.coordinate.x).at(current.coordinate.y - 1))) {
-                return search(map.at(current.coordinate.x).at(current.coordinate.y - 1),West) + 1;
+                returnValue = search(map.at(current.coordinate.x).at(current.coordinate.y - 1),West);
+                returnValue.push_back(current.coordinate);
+                return returnValue;
             }
 
             if(direction == East && current.coordinate.x < map.size() - 1 &&
                Connectable(current, map.at(current.coordinate.x + 1).at(current.coordinate.y))) {
-                return search(map.at(current.coordinate.x + 1).at(current.coordinate.y),South) + 1;
+                returnValue =  search(map.at(current.coordinate.x + 1).at(current.coordinate.y),South);
+                returnValue.push_back(current.coordinate);
+                return  returnValue;
             }
 
-            return std::numeric_limits<uint>::min();
+            return returnValue;
 
         case Southeast:
             if(direction == North && current.coordinate.y < map.at(0).size() - 1 &&
                Connectable(current, map.at(current.coordinate.x).at(current.coordinate.y + 1))) {
-                return search(map.at(current.coordinate.x).at(current.coordinate.y + 1),East) + 1;
+                returnValue =  search(map.at(current.coordinate.x).at(current.coordinate.y + 1),East);
+                returnValue.push_back(current.coordinate);
+                return returnValue;
             }
 
             if(direction == West && current.coordinate.x < map.size() - 1 &&
                Connectable(current, map.at(current.coordinate.x + 1).at(current.coordinate.y))) {
-                return search(map.at(current.coordinate.x + 1).at(current.coordinate.y),South) + 1;
+                returnValue = search(map.at(current.coordinate.x + 1).at(current.coordinate.y),South);
+                returnValue.push_back(current.coordinate);
+                return returnValue;
             }
 
-            return std::numeric_limits<uint>::min();
+            return returnValue;
 
         case Eastwest:
             if(direction == East && current.coordinate.y > 0 &&
                Connectable(current, map.at(current.coordinate.x).at(current.coordinate.y + 1))) {
-                return search(map.at(current.coordinate.x).at(current.coordinate.y + 1),East) + 1;
+                returnValue = search(map.at(current.coordinate.x).at(current.coordinate.y + 1),East);
+                returnValue.push_back(current.coordinate);
+                return returnValue;
             }
 
             if(direction == West && current.coordinate.y < map.at(0).size() &&
                Connectable(current, map.at(current.coordinate.x).at(current.coordinate.y - 1))) {
-                return search(map.at(current.coordinate.x).at(current.coordinate.y - 1),West) + 1;
+                returnValue =  search(map.at(current.coordinate.x).at(current.coordinate.y - 1),West);
+                returnValue.push_back(current.coordinate);
+                return returnValue;
             }
 
-            return std::numeric_limits<uint>::min();
+            return returnValue;
         case Ground:
-            return std::numeric_limits<uint>::min();
+            return returnValue;
         case Start:
-            return 1;
+            returnValue.push_back(current.coordinate);
+            return returnValue;
     }
 }
 
@@ -236,7 +265,6 @@ int main() {
 
     Coordinate startC{0,0};
     map.resize(input.size());
-
     for(std::size_t i = 0; i < input.size(); i++) {
         map.at(i).resize(input.at(i).size());
         for(std::size_t j = 0; j < input.at(i).size(); j++) {
@@ -249,28 +277,54 @@ int main() {
                 startC = t.coordinate;
         }
     }
+
     uint steps = 0;
-
-
+    std::vector<Coordinate> path;
 
     if(startC.x > 0 && Connectable(map.at(startC.x).at(startC.y),map.at(startC.x - 1).at(startC.y))) {
-        steps = std::max(steps,search(map.at(startC.x - 1).at(startC.y),North));
+        auto newpath = search(map.at(startC.x - 1).at(startC.y),North);
+        uint pre = steps;
+        steps = std::max(steps,(uint)newpath.size());
+        path = steps != pre ? newpath : path;
     }
 
     if(startC.y > 0 && Connectable(map.at(startC.x).at(startC.y),map.at(startC.x).at(startC.y - 1))) {
-        steps = std::max(steps,search(map.at(startC.x).at(startC.y - 1),West));
+        auto newpath = search(map.at(startC.x).at(startC.y - 1),West);
+        uint pre = steps;
+        steps = std::max(steps,(uint)newpath.size());
+        path = steps != pre ? newpath : path;
     }
 
     if(startC.x < map.size() - 1 && Connectable(map.at(startC.x).at(startC.y),map.at(startC.x + 1).at(startC.y))) {
-        steps = std::max(steps,search(map.at(startC.x + 1).at(startC.y),South));
+        auto newpath = search(map.at(startC.x + 1).at(startC.y),South);
+        uint pre = steps;
+        steps = std::max(steps,(uint)newpath.size());
+        path = steps != pre ? newpath : path;
     }
 
     if(startC.y < map.at(0).size() - 1 && Connectable(map.at(startC.x).at(startC.y),map.at(startC.x).at(startC.y + 1))) {
-        steps = std::max(steps,search(map.at(startC.x).at(startC.y + 1),East));
+        auto newpath = search(map.at(startC.x).at(startC.y + 1),East);
+        uint pre = steps;
+        steps = std::max(steps,(uint)newpath.size());
+        path = steps != pre ? newpath : path;
     }
 
 
-    steps /= 2;
-    assert(steps == 6846);
-    std::cout << steps << std::endl;
+
+    int sum = 0;
+    for(std::size_t i = 0; i < path.size(); i++) {
+        Coordinate n1 = path.at(i);
+        Coordinate n2 = path.at((i+1) % path.size());
+        int x1, y1;
+        x1 = n1.x;
+        y1 = n1.y;
+        int x2, y2;
+        x2 = n2.x;
+        y2 = n2.y;
+        sum +=  (x1 * y2 - y1 * x2);
+    }
+    int numberOfInsides = std::abs(sum/2) - (int) path.size()/2 + 1;
+
+    assert(numberOfInsides == 325);
+    std::cout << numberOfInsides  << std::endl;
 }
