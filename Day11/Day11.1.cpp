@@ -21,12 +21,14 @@ struct Vertex {
     int id;
     Weight w;
     uint distance;
+    bool visited ;
 
     Vertex(uint x, uint y) {
         this->x = x;
         this->y = y;
         this->id = -1;
         this->w = One;
+        this->visited = false;
     }
 
     Vertex(uint x, uint y, int id) {
@@ -34,6 +36,7 @@ struct Vertex {
         this->y = y;
         this->id = id;
         this->w = One;
+        this->visited = false;
     }
 };
 
@@ -42,7 +45,7 @@ typedef std::vector<std::vector<Vertex>> Universe;
 void setDistanceMax(Universe& universe) {
     for(std::vector<Vertex>& line: universe) {
         for(Vertex& v: line) {
-            v.distance = (std::numeric_limits<uint>::max())/2;
+            v.visited = false;
         }
     }
 }
@@ -64,23 +67,27 @@ void BFS(Universe& universe, uint x, uint y) {
         if (thisVertex.id != -1 && thisVertex.id != startid) {
             distances.at(startid).at(thisVertex.id) = thisVertex.distance;
         }
-        if (coords.first > 0 && thisVertex.distance + thisVertex.w < universe.at(coords.first - 1).at(coords.second).distance) {
+        if (coords.first > 0 && !universe.at(coords.first - 1).at(coords.second).visited) {
             universe.at(coords.first - 1).at(coords.second).distance = thisVertex.distance + thisVertex.w;
+            universe.at(coords.first - 1).at(coords.second).visited = true;
             queue.push(std::make_pair(coords.first - 1,coords.second));
         }
 
-        if (coords.second > 0 && thisVertex.distance + thisVertex.w < universe.at(coords.first).at(coords.second - 1).distance) {
+        if (coords.second > 0 && !universe.at(coords.first).at(coords.second - 1).visited) {
             universe.at(coords.first).at(coords.second - 1).distance = thisVertex.distance + thisVertex.w;
+            universe.at(coords.first).at(coords.second - 1).visited = true;
             queue.push(std::make_pair(coords.first,coords.second - 1));
         }
 
-        if (coords.first < universe.size() - 1 && thisVertex.distance + thisVertex.w < universe.at(coords.first + 1).at(coords.second).distance) {
+        if (coords.first < universe.size() - 1 && !universe.at(coords.first + 1).at(coords.second).visited) {
             universe.at(coords.first + 1).at(coords.second).distance = thisVertex.distance + thisVertex.w;
+            universe.at(coords.first + 1).at(coords.second).visited = true;
             queue.push(std::make_pair(coords.first + 1,coords.second));
         }
 
-        if (coords.second < universe.at(0).size() - 1 && thisVertex.distance + thisVertex.w < universe.at(coords.first).at(coords.second + 1).distance) {
+        if (coords.second < universe.at(0).size() - 1 && !universe.at(coords.first).at(coords.second + 1).visited) {
             universe.at(coords.first).at(coords.second + 1).distance = thisVertex.distance + thisVertex.w;
+            universe.at(coords.first).at(coords.second + 1).visited = true;
             queue.push(std::make_pair(coords.first,coords.second + 1));
         }
     }
@@ -94,6 +101,7 @@ void getDistances(Universe universe) {
             if(v.id != -1) {
                 setDistanceMax(universe);
                 v.distance = 0;
+                v.visited = true;
                 BFS(universe,v.x,v.y);
             }
         }
