@@ -12,7 +12,7 @@
 
 enum Weight {
     One = 1,
-    Double = 2
+    Million = 1000000
 };
 
 
@@ -86,7 +86,7 @@ void BFS(Universe& universe, uint x, uint y) {
     }
 }
 
-//Could be optimized
+
 void getDistances(Universe universe) {
     for(size_t i = 0; i < universe.size(); i++) {
         for(size_t j = 0; j < universe.at(i).size(); j++) {
@@ -141,7 +141,7 @@ int main() {
 
         if(allSpace) {
             for (size_t j = 0; j < universe.at(i).size(); j++) {
-                universe.at(i).at(j).w = Double;
+                universe.at(i).at(j).w = Million;
             }
         }
     }
@@ -160,7 +160,7 @@ int main() {
 
         if(allSpace) {
             for (size_t j = 0; j < universe.size(); j++) {
-                universe.at(j).at(i).w = Double;
+                universe.at(j).at(i).w = Million;
             }
         }
     }
@@ -169,7 +169,7 @@ int main() {
     distances.resize(galaxies,d);
     getDistances(universe);
 
-    uint sum = 0;
+    unsigned long long sum = 0;
     for(std::vector<uint> line: distances) {
         for(uint x: line) {
             sum += x;
@@ -177,6 +177,6 @@ int main() {
     }
     sum /= 2;
 
-    assert(sum == 9965032);
+    assert(sum == 550358864332);
     std::cout << sum << std::endl;
 }

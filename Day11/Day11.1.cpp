@@ -86,7 +86,7 @@ void BFS(Universe& universe, uint x, uint y) {
     }
 }
 
-
+//Could be optimized
 void getDistances(Universe universe) {
     for(size_t i = 0; i < universe.size(); i++) {
         for(size_t j = 0; j < universe.at(i).size(); j++) {
