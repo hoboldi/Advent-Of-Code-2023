@@ -52,6 +52,7 @@ void setDistanceMax(Universe& universe) {
 
 std::vector<std::vector<uint>> distances;
 
+//Could be done without graph traverse
 void BFS(Universe& universe, uint x, uint y) {
     std::queue<std::pair<uint,uint>> queue;
     queue.push(std::make_pair(x,y));
@@ -93,7 +94,6 @@ void BFS(Universe& universe, uint x, uint y) {
     }
 }
 
-//Could be optimized
 void getDistances(Universe universe) {
     for(size_t i = 0; i < universe.size(); i++) {
         for(size_t j = 0; j < universe.at(i).size(); j++) {
