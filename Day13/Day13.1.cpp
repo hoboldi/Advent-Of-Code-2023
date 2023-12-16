@@ -115,6 +115,6 @@ int main() {
     result += solvePatterns(p);
 
 
-    //assert(sum == 9965032);
+    assert(result == 35210);
     std::cout << result << std::endl;
 }
