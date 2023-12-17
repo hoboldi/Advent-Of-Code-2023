@@ -65,8 +65,6 @@ uint runCycle (Map map) {
 
   for(std::size_t k = 0; k < 4 * 1000000000; k++) {
 
-    std::cout << 4 * 1000000000 - k <<  std::endl;
-
     rotateMatrix(map);
 
     for(std::size_t i = 0; i < map.size(); i++)
@@ -83,7 +81,6 @@ uint runCycle (Map map) {
   }
   rotateMatrix(map);
   rotateMatrix(map);
-  printMatrix(map);
 
   for(std::size_t i = 0; i < map.size(); i++)
   {
