@@ -1,13 +1,11 @@
 #include <vector>
 #include <iostream>
 #include <string>
-#include <sstream>
 #include <limits>
 #include <fstream>
 #include <algorithm>
 #include <cassert>
 #include <map>
-#include <stack>
 
 
 enum TileType {

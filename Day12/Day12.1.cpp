@@ -6,9 +6,7 @@
 #include <fstream>
 #include <algorithm>
 #include <cassert>
-#include <map>
 #include <stack>
-#include <queue>
 
 enum Spring {
   Operational,
