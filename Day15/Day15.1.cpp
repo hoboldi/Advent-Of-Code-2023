@@ -4,10 +4,9 @@
 #include <sstream>
 #include <limits>
 #include <fstream>
-#include <algorithm>
 #include <cassert>
 
-uint hash(std::string text) {
+uint hash(std::string& text) {
   uint hash = 0;
 
   for(char c: text) {
@@ -19,7 +18,7 @@ uint hash(std::string text) {
   return hash;
 }
 
-uint solveHashes(std::string input) {
+uint solveHashes(std::string& input) {
   std::stringstream inputStream(input);
   std::string segment;
   std::vector<std::string> hashes(0);
@@ -32,8 +31,8 @@ uint solveHashes(std::string input) {
 
   uint sum = 0;
 
-  for(std::string thisHash: hashes) {
-    sum += hash(thisHash);
+  for(std::string& thisLen: hashes) {
+    sum += hash(thisLen);
   }
 
   return sum;
@@ -59,8 +58,6 @@ int main() {
 
     uint sum = solveHashes(input.at(0));
 
-
-
-
+    assert(sum == 515495);
     std::cout << sum << std::endl;
 }
