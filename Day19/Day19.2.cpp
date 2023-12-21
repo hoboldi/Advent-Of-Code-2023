@@ -5,89 +5,296 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include <limits.h>
+#include <map>
 
-enum Direction {
-  UP,
-  DOWN,
-  LEFT,
-  RIGHT
+enum Category {
+  XCool,
+  Musical,
+  Aero,
+  Shiny
 };
 
-typedef std::pair<Direction, long long> Instruction;
+enum RuleDirection {
+  Smaller,
+  Bigger,
+  NoDirection,
+};
 
-Instruction stringToInstruction(std::string& line) {
-  std::istringstream iss(line);
-  Instruction digInstruction;
+struct Workflow;
 
-  std::string segment;
-  std::getline(iss, segment, ' ');
-  std::getline(iss, segment, ' ');
-  std::getline(iss, segment, ' ');
+struct PartLimits {
+  unsigned long long XCoolMin;
+  unsigned long long XCoolMax;
+  unsigned long long MusicalMin;
+  unsigned long long MusicalMax;
+  unsigned long long AeroMin;
+  unsigned long long AeroMax;
+  unsigned long long ShinyMin;
+  unsigned long long ShinyMax;
+};
 
-  switch (segment[7]) {
-  case '0':
-    digInstruction.first = RIGHT;
-    break;
-  case '1':
-    digInstruction.first = DOWN;
-    break;
-  case '2':
-    digInstruction.first = LEFT;
-    break;
-  case '3':
-    digInstruction.first = UP;
-    break;
-  }
+struct Part {
+  uint XCool;
+  uint Musical;
+  uint Aero;
+  uint Shiny;
+  Workflow* workflow;
+};
 
-  digInstruction.second =  stoll(segment.substr(2,5), nullptr, 16);
+struct Rule {
+  Category category;
+  uint number;
+  RuleDirection direction;
+  Workflow* workflow;
+  std::string workflowName;
+};
 
-  return digInstruction;
+struct Workflow {
+  std::string name;
+  std::vector<Rule> rules;
+};
+
+std::vector<Workflow> memoryWorkflow;
+std::map<std::string,Workflow*> workflows;
+std::vector<Part> parts;
+
+std::string getUntilCharWithSplit(std::string& line, char c) {
+  if(!line.contains(c))
+    return "";
+  std::string returnString;
+  uint index = line.find(c);
+  returnString = line.substr(0, index);
+  line.erase(0, index + 1);
+  return returnString;
 }
 
-long long solveInstructions(std::vector<std::string> input) {
-  std::vector<Instruction> instructions(input.size());
-  for(std::size_t i = 0; i < input.size(); i++) {
-    instructions.at(i) = stringToInstruction(input.at(i));
-  }
 
-  long long area = 0;
+void parseWorkflowLine(std::string line, std::size_t index) {
+  Workflow* workflow;
 
-  long long lastRow = 0, lastColumn = 0;
+  std::string name = getUntilCharWithSplit(line,'{');
 
-  for(const Instruction& instruction: instructions) {
-    long long preRow = lastRow;
-    long long preColumn = lastColumn;
+  workflow = &(memoryWorkflow.at(index));
+  workflow->name = std::move(name);
+  workflows.insert(std::make_pair(workflow->name,workflow));
 
-    switch (instruction.first) {
-    case UP:
-      lastRow -= instruction.second;
+  std::string ruleString = "notEmpty";
+  while(!ruleString.empty()) {
+    ruleString = getUntilCharWithSplit(line,',');
+    if(ruleString.empty())
       break;
-    case DOWN:
-      lastRow += instruction.second;
+
+    Rule rule{};
+
+    if(ruleString.contains('>')) {
+      rule.direction = Bigger;
+    } else {
+      rule.direction = Smaller;
+    }
+
+    switch (ruleString.at(0)) {
+    case 'a':
+      rule.category = Aero;
       break;
-    case LEFT:
-      lastColumn -= instruction.second;
+    case 'x':
+      rule.category = XCool;
       break;
-    case RIGHT:
-      lastColumn += instruction.second;
+    case 'm':
+      rule.category = Musical;
+      break;
+    case 's':
+      rule.category = Shiny;
       break;
     }
 
-    area += (preRow + lastRow) * (preColumn - lastColumn);
-    area += instruction.second;
+    std::string condition = getUntilCharWithSplit(ruleString,':');
+    if(condition.contains('>')) {
+      getUntilCharWithSplit(condition,'>');
+      rule.direction = Bigger;
+    } else {
+      getUntilCharWithSplit(condition, '<');
+      rule.direction = Smaller;
+    }
+    rule.number = std::stoul(condition);
+    rule.workflowName = std::move (ruleString);
+    ruleString = "notEmpty";
+    workflow->rules.push_back(rule);
   }
 
-  return std::abs(area/2) + 1;
+  Rule rule{};
+  rule.direction = NoDirection;
+
+  line.erase(line.size() - 1);
+  rule.workflowName =  std::move (line);
+  workflow->rules.push_back(rule);
 }
 
 
+uint parseWorkflows(std::vector<std::string> input) {
+  std::size_t i = 0;
 
+  while(input.at(i++) != "");
+  memoryWorkflow.resize(i + 1, Workflow());
+  i = 0;
+
+  Workflow accepted("A");
+  Workflow rejected("R");
+  memoryWorkflow.at(0) = accepted;
+  memoryWorkflow.at(1) = rejected;
+  workflows.insert(std::make_pair("A",&(memoryWorkflow.at(0))));
+  workflows.insert(std::make_pair("R",&(memoryWorkflow.at(1))));
+
+  while(input.at(i) != "") {
+    parseWorkflowLine(input.at(i),2 + i);
+    i++;
+  }
+
+  for(Workflow& w: memoryWorkflow) {
+    for(Rule& r: w.rules) {
+      r.workflow = workflows.find(r.workflowName)->second;
+    }
+  }
+
+  return i + 1;
+}
+
+void parsePartLine(std::string line) {
+  std::stringstream test(line.substr(1,line.size() - 2));
+  std::string segment;
+
+  Part part{};
+  std::getline(test, segment, ',');
+  part.XCool = std::stoul(segment.substr(2));
+  std::getline(test, segment, ',');
+  part.Musical = std::stoul(segment.substr(2));
+  std::getline(test, segment, ',');
+  part.Aero = std::stoul(segment.substr(2));
+  std::getline(test, segment, ',');
+  part.Shiny = std::stoul(segment.substr(2));
+  part.workflow = workflows.find("in")->second;
+  parts.push_back(part);
+}
+
+
+void parseParts(std::vector<std::string>& input, uint index) {
+  for(std::size_t i = index; i < input.size(); i++) {
+    std::string line = input.at(i);
+    parsePartLine(line);
+  }
+}
+
+void parse(std::vector<std::string>& input) {
+  uint index = parseWorkflows(input);
+  parseParts(input, index);
+}
+
+unsigned long long solveLimits(PartLimits limits, Workflow* workflow) {
+  if(workflow->name == "A")
+    return (limits.MusicalMax - limits.MusicalMin + (unsigned long long) 1) * (limits.AeroMax - limits.AeroMin + (unsigned long long) 1) * (limits.ShinyMax - limits.ShinyMin + (unsigned long long) 1) * (limits.XCoolMax - limits.XCoolMin + (unsigned long long) 1);
+
+  if(workflow->name == "R")
+    return 0;
+
+  unsigned long long returnValue = 0;
+
+
+  for(Rule& rule: workflow->rules) {
+    PartLimits split1 = limits;
+    PartLimits split2 = limits;
+    uint correctCategoryMin;
+    uint correctCategoryMax;
+    Category category = rule.category;
+    switch (category) {
+    case XCool:
+      correctCategoryMin = limits.XCoolMin;
+      correctCategoryMax = limits.XCoolMax;
+      split1.XCoolMax = rule.number;
+      split2.XCoolMin = rule.number;
+      break;
+    case Shiny:
+      correctCategoryMin = limits.ShinyMin;
+      correctCategoryMax = limits.ShinyMax;
+      split1.ShinyMax = rule.number;
+      split2.ShinyMin = rule.number;
+      break;
+    case Aero:
+      correctCategoryMin = limits.AeroMin;
+      correctCategoryMax = limits.AeroMax;
+      split1.AeroMax = rule.number;
+      split2.AeroMin = rule.number;
+      break;
+    case Musical:
+      correctCategoryMin = limits.MusicalMin;
+      correctCategoryMax = limits.MusicalMax;
+      split1.MusicalMax = rule.number;
+      split2.MusicalMin = rule.number;
+      break;
+    }
+
+    switch (rule.direction) {
+    case NoDirection:
+      returnValue += solveLimits(limits,rule.workflow);
+      break;
+    case Smaller:
+      if(correctCategoryMax < rule.number)
+        returnValue += solveLimits(limits,rule.workflow);
+      if(correctCategoryMin > rule.number)
+        break;
+
+      switch (category) {
+      case Shiny:
+        split1.ShinyMax--;
+        break;
+      case Aero:
+        split1.AeroMax--;
+        break;
+      case Musical:
+        split1.MusicalMax--;
+        break;
+      case XCool:
+        split1.XCoolMax--;
+        break;
+      }
+      returnValue += (unsigned long long) solveLimits(split1,rule.workflow);
+      limits = split2;
+      break;
+    case Bigger:
+      if(correctCategoryMax < rule.number)
+        break;
+      if(correctCategoryMin > rule.number)
+        returnValue += solveLimits(limits,rule.workflow);
+
+
+      switch (category) {
+      case Shiny:
+        split2.ShinyMin++;
+        break;
+      case Aero:
+        split2.AeroMin++;
+        break;
+      case Musical:
+        split2.MusicalMin++;
+        break;
+      case XCool:
+        split2.XCoolMin++;
+        break;
+      }
+      returnValue += (unsigned long long) solveLimits(split2,rule.workflow);
+      limits = split1;
+      break;
+    }
+  }
+  return returnValue;
+}
+
+unsigned long long solve() {
+  return solveLimits(PartLimits(1,4000,1,4000,1,4000,1,4000),workflows.find("in")->second);
+}
 
 
 
 int main() {
-  std::string inputName = "../../Day18/Day18.txt";
+  std::string inputName = "../../Day19/Day19.txt";
   std::ifstream inputFile (inputName);
   if (!inputFile)
     throw std::runtime_error("Could not open file " + std::string(inputName));
@@ -103,8 +310,9 @@ int main() {
       break;
   }
 
-  long long solution = solveInstructions(input);
+  parse(input);
+  unsigned long long solution = solve();
 
-  assert(solution == 52885384955882);
+  assert(solution == 121464316215623);
   std::cout << solution << std::endl;
 }

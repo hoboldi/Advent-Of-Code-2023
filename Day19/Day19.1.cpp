@@ -140,7 +140,6 @@ uint parseWorkflows(std::vector<std::string> input) {
 
   for(Workflow& w: memoryWorkflow) {
     for(Rule& r: w.rules) {
-      std::cout << r.workflowName << std::endl;
       r.workflow = workflows.find(r.workflowName)->second;
     }
   }
