@@ -32,18 +32,20 @@ typedef std::vector<std::vector<Tile>> Garden;
 uint startRow;
 uint startColumn;
 
-Garden parse(std::vector<std::string>& input) {
-  uint r = 0;
-  uint c = 0;
+Garden parse(std::vector<std::string>& input, uint num) {
+  Garden garden(input.size() * num);
 
-  Garden garden(input.size());
+  for(std::size_t i = 0; i < input.size() * num; i++) {
+    garden.at(i).resize(input.at(0).size() * num);
 
-  for(std::string& line: input) {
-    garden.at(r).resize(input.at(r).size());
-    for(char character: line) {
+    for(std::size_t j = 0; j < input.at(0).size() * num; j++) {
+      uint indexi = i % input.size();
+      uint indexj = j % input.at(0).size();
+      char character = input.at(indexi).at(indexj);
+
       Tile tile;
-      tile.row = r;
-      tile.column = c;
+      tile.row = i;
+      tile.column = j;
 
       switch (character) {
       case '.':
@@ -54,19 +56,18 @@ Garden parse(std::vector<std::string>& input) {
         break;
       case 'S':
         tile.gardenTile = Plot;
-        startRow = r;
-        startColumn = c;
+        startRow = i;
+        startColumn = j;
         break;
       default:
         throw std::invalid_argument("Wrong input!");
       }
 
-      garden.at(r).at(c) = tile;
-      c++;
+      garden.at(i).at(j) = tile;
     }
-    r++;
-    c = 0;
   }
+  startRow -= ((num - 1) / 2) * 131;
+  startColumn -= ((num - 1 ) / 2) * 131;
 
   return garden;
 }
@@ -92,7 +93,6 @@ std::vector<Tile*> getNeighbours(Garden& garden, uint row, uint column) {
   return returnVector;
 }
 
-
 void dijkstra(Garden& garden) {
   std::priority_queue<Tile*,std::vector<Tile*>,Compare> queue;
   Tile* startTile = &(garden[startRow][startColumn]);
@@ -101,8 +101,6 @@ void dijkstra(Garden& garden) {
 
   while(!queue.empty()) {
     Tile* currentTile = queue.top();
-    if(currentTile->distance > 64)
-      break;
 
     queue.pop();
 
@@ -118,36 +116,47 @@ void dijkstra(Garden& garden) {
   }
 }
 
-uint count(Garden& garden) {
-  uint number = 0;
+unsigned long long count(Garden& garden, unsigned long long num) {
+  unsigned long long number = 0;
   for(std::vector<Tile>& row: garden) {
-    for(Tile& t: row) {
-      if(t.distance <= 64 && t.distance % 2 == 0) {
+    for(Tile t: row) {
+      if(t.distance <= num && t.distance % 2 == 1) {
+        std::cout << "O";
         number++;
+      } else {
+        std::cout << ".";
       }
-    }
-  }
-  return number;
-}
-
-void print(Garden& garden) {
-  for(std::vector<Tile>& row: garden) {
-    for(Tile& t: row) {
-      if(t.distance > 6 || t.distance % 2 == 1)
-      {
-        std::cout << "#";
-        continue;
-      }
-
-      std::cout << "O";
     }
     std::cout << std::endl;
   }
+  std::cout << std::endl;
+  return number;
+}
+
+unsigned long long polynomialFit(unsigned long long x1, unsigned long long y1, unsigned long long x2, unsigned long long y2, unsigned long long x3, unsigned long long y3, unsigned long long x) {
+  return y1
+         +(y2 - y1) / (x2 - x1) * (x - x1)
+         +((y3 - y2) / ((x3 - x2) * (x3 - x1)) - (y2 - y1) / ((x2 - x1) * (x3 - x1))) * (x - x1) * (x - x2);
+}
+
+unsigned long long solve(unsigned long long size, std::vector<std::string> input) {
+  Garden garden;
+  unsigned long long steps = 26501365;
+  garden = parse(input, 1);
+  dijkstra(garden);
+  unsigned long long y1 = count(garden, size / 2);
+  garden = parse(input, 3);
+  dijkstra(garden);
+  unsigned long long y2 = count(garden, (size / 2) + size);
+  garden = parse(input, 5);
+  dijkstra(garden);
+  unsigned long long y3 = count(garden, size / 2 + 2 * size);
+  return polynomialFit(0, y1, 1, y2, 2, y3, (steps - (size / 2)) / size);
 }
 
 
 int main() {
-  std::string inputName = "../../Day20/Day20.txt";
+  std::string inputName = "../../Day21/Day21.txt";
   std::ifstream inputFile (inputName);
   if (!inputFile)
     throw std::runtime_error("Could not open file " + std::string(inputName));
@@ -162,10 +171,8 @@ int main() {
     if(inputFile.eof())
       break;
   }
-  Garden garden = parse(input);
-  dijkstra(garden);
-  uint solution = count(garden);
-  print(garden);
+
+  unsigned long long solution = solve(input.size(), input);
 
   //assert(solution == 331208);
   std::cout << solution << std::endl;
