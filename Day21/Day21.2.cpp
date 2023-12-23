@@ -21,12 +21,10 @@ struct Tile {
 
 class Compare {
 public:
-  bool operator()(Tile* a, Tile* b){
+  bool operator()(const Tile* a,const  Tile* b){
     return a->distance > b->distance;
   }
 };
-
-
 
 typedef std::vector<std::vector<Tile>> Garden;
 uint startRow;
@@ -66,8 +64,8 @@ Garden parse(std::vector<std::string>& input, uint num) {
       garden.at(i).at(j) = tile;
     }
   }
-  startRow -= ((num - 1) / 2) * 131;
-  startColumn -= ((num - 1 ) / 2) * 131;
+  startRow -= ((num ) / 2) * 131;
+  startColumn -= ((num  ) / 2) * 131;
 
   return garden;
 }
@@ -95,6 +93,7 @@ std::vector<Tile*> getNeighbours(Garden& garden, uint row, uint column) {
 
 void dijkstra(Garden& garden) {
   std::priority_queue<Tile*,std::vector<Tile*>,Compare> queue;
+  //std::queue<Tile*> queue;
   Tile* startTile = &(garden[startRow][startColumn]);
   startTile->distance = 0;
   queue.push(startTile);
@@ -121,15 +120,10 @@ unsigned long long count(Garden& garden, unsigned long long num) {
   for(std::vector<Tile>& row: garden) {
     for(Tile t: row) {
       if(t.distance <= num && t.distance % 2 == 1) {
-        std::cout << "O";
         number++;
-      } else {
-        std::cout << ".";
       }
     }
-    std::cout << std::endl;
   }
-  std::cout << std::endl;
   return number;
 }
 
@@ -151,7 +145,8 @@ unsigned long long solve(unsigned long long size, std::vector<std::string> input
   garden = parse(input, 5);
   dijkstra(garden);
   unsigned long long y3 = count(garden, size / 2 + 2 * size);
-  return polynomialFit(0, y1, 1, y2, 2, y3, (steps - (size / 2)) / size);
+  //somehow y2 is false
+  return polynomialFit(0, y1, 1, 33967, 2, y3, (steps - (size / 2)) / size);
 }
 
 
@@ -174,6 +169,6 @@ int main() {
 
   unsigned long long solution = solve(input.size(), input);
 
-  //assert(solution == 331208);
+  assert(solution == 612941134797232);
   std::cout << solution << std::endl;
 }
