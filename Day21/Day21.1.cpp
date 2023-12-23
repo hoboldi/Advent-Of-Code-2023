@@ -21,7 +21,7 @@ struct Tile {
 
 class Compare {
 public:
-  bool operator()(Tile* a, Tile* b){
+  bool operator()(const Tile* a,const Tile* b){
     return a->distance > b->distance;
   }
 };
@@ -132,7 +132,7 @@ uint count(Garden& garden) {
 
 
 int main() {
-    std::string inputName = "../../Day20/Day20.txt";
+    std::string inputName = "../../Day21/Day21.txt";
     std::ifstream inputFile (inputName);
     if (!inputFile)
         throw std::runtime_error("Could not open file " + std::string(inputName));
